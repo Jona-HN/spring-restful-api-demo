@@ -69,7 +69,8 @@ public class LoanRequestController {
         // to know which item is being deleted.
         // If a request with such an ID is not found,
         // the findById method will handle the exception.
-        LoanRequest loanRequest = findById(id);
+        LoanRequest loanRequest = repository.findById(id).
+                orElseThrow(() -> new LoanRequestNotFoundException(id));
 
         repository.deleteById(id);
 
