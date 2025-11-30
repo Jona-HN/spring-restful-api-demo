@@ -1,5 +1,6 @@
 package com.uabc.jonahn.springweb.LoanRequest.controllers;
 
+import com.uabc.jonahn.springweb.LoanRequest.assemblers.LoanRequestModelAssembler;
 import com.uabc.jonahn.springweb.LoanRequest.exceptions.LoanRequestNotFoundException;
 import com.uabc.jonahn.springweb.LoanRequest.models.LoanRequest;
 import com.uabc.jonahn.springweb.LoanRequest.repositories.LoanRequestRepository;
@@ -17,14 +18,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 public class LoanRequestController {
 
     private final LoanRequestRepository repository;
+    private final LoanRequestModelAssembler assembler;
 
     // Get all loan requests
     @GetMapping("/loan_requests")
     public CollectionModel<EntityModel<LoanRequest>> findAll() {
         List<EntityModel<LoanRequest>> loanRequests = repository.findAll().stream()
-                .map(request -> EntityModel.of(request,
-                        linkTo(methodOn(LoanRequestController.class).findById(request.getId())).withSelfRel(),
-                        linkTo(methodOn(LoanRequestController.class).findAll()).withRel("loan_requests")))
+                .map(assembler::toModel)
                 .toList();
 
         return CollectionModel.of(loanRequests, linkTo(methodOn(LoanRequestController.class).findAll()).withSelfRel());
@@ -42,9 +42,7 @@ public class LoanRequestController {
         LoanRequest request =  repository.findById(id).
                 orElseThrow(() -> new LoanRequestNotFoundException(id));
 
-        return EntityModel.of(request,
-                linkTo(methodOn(LoanRequestController.class).findById(id)).withSelfRel(),
-                linkTo(methodOn(LoanRequestController.class).findAll()).withRel("loan_requests"));
+        return assembler.toModel(request);
     }
 
     // Update loan request information
