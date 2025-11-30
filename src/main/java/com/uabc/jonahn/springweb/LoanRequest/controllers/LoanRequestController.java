@@ -20,7 +20,7 @@ public class LoanRequestController {
 
     // Get all loan requests
     @GetMapping("/loan_requests")
-    CollectionModel<EntityModel<LoanRequest>> findAll() {
+    public CollectionModel<EntityModel<LoanRequest>> findAll() {
         List<EntityModel<LoanRequest>> loanRequests = repository.findAll().stream()
                 .map(request -> EntityModel.of(request,
                         linkTo(methodOn(LoanRequestController.class).findById(request.getId())).withSelfRel(),
@@ -32,13 +32,13 @@ public class LoanRequestController {
 
     // Create a loan request
     @PostMapping("/loan_requests")
-    LoanRequest save(@RequestBody LoanRequest request) {
+    public LoanRequest save(@RequestBody LoanRequest request) {
         return repository.save(request);
     }
 
     // Retrieve a loan request by its ID
     @GetMapping("/loan_requests/{id}")
-    EntityModel<LoanRequest> findById(@PathVariable Long id) {
+    public EntityModel<LoanRequest> findById(@PathVariable Long id) {
         LoanRequest request =  repository.findById(id).
                 orElseThrow(() -> new LoanRequestNotFoundException(id));
 
@@ -49,7 +49,7 @@ public class LoanRequestController {
 
     // Update loan request information
     @PutMapping("/loan_requests/{id}")
-    LoanRequest update(@PathVariable Long id, @RequestBody LoanRequest newRequest) {
+    public LoanRequest update(@PathVariable Long id, @RequestBody LoanRequest newRequest) {
         return repository.findById(id)
                 .map(oldRequest -> {
                     oldRequest.setApplicantName(newRequest.getApplicantName());
@@ -64,7 +64,7 @@ public class LoanRequestController {
 
     // Delete loan request
     @DeleteMapping("/loan_requests/{id}")
-    LoanRequest deleteById(@PathVariable Long id) {
+    public LoanRequest deleteById(@PathVariable Long id) {
         // First check if the request do exists
         // to know which item is being deleted.
         // If a request with such an ID is not found,
