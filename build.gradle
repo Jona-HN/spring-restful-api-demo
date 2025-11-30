@@ -31,6 +31,9 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok:1.18.42'
 	testCompileOnly 'org.projectlombok:lombok:1.18.42'
 	testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
+
+	// Spring HATEOAS
+	compileOnly 'org.springframework.boot:spring-boot-starter-hateoas'
 }
 
 tasks.named('test') {
