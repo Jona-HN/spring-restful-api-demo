@@ -4,9 +4,13 @@ import com.uabc.jonahn.springweb.LoanRequest.exceptions.LoanRequestNotFoundExcep
 import com.uabc.jonahn.springweb.LoanRequest.models.LoanRequest;
 import com.uabc.jonahn.springweb.LoanRequest.repositories.LoanRequestRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -16,8 +20,14 @@ public class LoanRequestController {
 
     // Get all loan requests
     @GetMapping("/loan_requests")
-    List<LoanRequest> findAll() {
-        return repository.findAll();
+    CollectionModel<EntityModel<LoanRequest>> findAll() {
+        List<EntityModel<LoanRequest>> loanRequests = repository.findAll().stream()
+                .map(request -> EntityModel.of(request,
+                        linkTo(methodOn(LoanRequestController.class).findById(request.getId())).withSelfRel(),
+                        linkTo(methodOn(LoanRequestController.class).findAll()).withRel("loan_requests")))
+                .toList();
+
+        return CollectionModel.of(loanRequests, linkTo(methodOn(LoanRequestController.class).findAll()).withSelfRel());
     }
 
     // Create a loan request
@@ -28,9 +38,13 @@ public class LoanRequestController {
 
     // Retrieve a loan request by its ID
     @GetMapping("/loan_requests/{id}")
-    LoanRequest findById(@PathVariable Long id) {
-        return repository.findById(id).
+    EntityModel<LoanRequest> findById(@PathVariable Long id) {
+        LoanRequest request =  repository.findById(id).
                 orElseThrow(() -> new LoanRequestNotFoundException(id));
+
+        return EntityModel.of(request,
+                linkTo(methodOn(LoanRequestController.class).findById(id)).withSelfRel(),
+                linkTo(methodOn(LoanRequestController.class).findAll()).withRel("loan_requests"));
     }
 
     // Update loan request information
