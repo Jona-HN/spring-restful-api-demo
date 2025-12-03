@@ -53,8 +53,8 @@ public class LoanRequestController {
 
     // Update loan request information
     @PutMapping("/loan_requests/{id}")
-    public LoanRequest update(@PathVariable Long id, @RequestBody LoanRequest newRequest) {
-        return repository.findById(id)
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody LoanRequest newRequest) {
+        LoanRequest updatedRequest = repository.findById(id)
                 .map(oldRequest -> {
                     oldRequest.setApplicantName(newRequest.getApplicantName());
                     oldRequest.setLoanAmount(newRequest.getLoanAmount());
@@ -64,6 +64,12 @@ public class LoanRequestController {
                     return repository.save(oldRequest);
                 })
                 .orElseGet(() -> repository.save(newRequest));
+
+        EntityModel<LoanRequest> entityModel = assembler.toModel(updatedRequest);
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     // Delete loan request
