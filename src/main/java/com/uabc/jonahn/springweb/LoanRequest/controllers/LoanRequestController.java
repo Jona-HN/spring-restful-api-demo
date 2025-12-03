@@ -74,17 +74,13 @@ public class LoanRequestController {
 
     // Delete loan request
     @DeleteMapping("/loan_requests/{id}")
-    public LoanRequest deleteById(@PathVariable Long id) {
-        // First check if the request do exists
-        // to know which item is being deleted.
-        // If a request with such an ID is not found,
-        // the findById method will handle the exception.
-        LoanRequest loanRequest = repository.findById(id).
-                orElseThrow(() -> new LoanRequestNotFoundException(id));
-
+    public ResponseEntity<?> deleteById(@PathVariable Long id) {
+        // First check if the request exists; else return a 404 code (not found)
+        repository.findById(id).orElseThrow(() -> new LoanRequestNotFoundException(id));
+        // If it does exist, delete it and return a 204 code (no content)
         repository.deleteById(id);
 
-        return loanRequest;
+        return ResponseEntity.noContent().build();
     }
 
 }
