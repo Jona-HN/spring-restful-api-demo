@@ -9,6 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.mediatype.problem.Problem;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -85,4 +89,42 @@ public class LoanRequestController {
         return ResponseEntity.noContent().build();
     }
 
+    // Reject a loan request, only if it's still in progress
+    @DeleteMapping("/loan_requests/{id}/reject")
+    public ResponseEntity<?> reject(@PathVariable Long id) {
+        LoanRequest request = repository.findById(id).orElseThrow(() -> new LoanRequestNotFoundException(id));
+
+        if (request.getStatus() == Status.IN_PROGRESS) {
+            request.setStatus(Status.REJECTED);
+
+            return ResponseEntity.ok(assembler.toModel(repository.save(request)));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+                .body(Problem.create()
+                        .withTitle("Method not allowed")
+                        .withDetail("You can't reject a loan request that is in the " + request.getStatus() + " status"));
+    }
+
+
+    // Approve a loan request, only if it's still in progress
+    @PutMapping("/loan_requests/{id}/approve")
+    public ResponseEntity<?> approve(@PathVariable Long id) {
+        LoanRequest request = repository.findById(id).orElseThrow(() -> new LoanRequestNotFoundException(id));
+
+        if (request.getStatus() == Status.IN_PROGRESS) {
+            request.setStatus(Status.APPROVED);
+
+            return ResponseEntity.ok(assembler.toModel(repository.save(request)));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.METHOD_NOT_ALLOWED)
+                .header(HttpHeaders.CONTENT_TYPE, MediaTypes.HTTP_PROBLEM_DETAILS_JSON_VALUE)
+                .body(Problem.create()
+                        .withTitle("Method not allowed")
+                        .withDetail("You can't approve a loan request that is in the " + request.getStatus() + " status"));
+    }
 }
