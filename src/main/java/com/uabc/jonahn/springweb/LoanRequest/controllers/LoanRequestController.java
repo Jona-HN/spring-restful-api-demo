@@ -4,6 +4,7 @@ import com.uabc.jonahn.springweb.LoanRequest.assemblers.LoanRequestModelAssemble
 import com.uabc.jonahn.springweb.LoanRequest.exceptions.LoanRequestNotFoundException;
 import com.uabc.jonahn.springweb.LoanRequest.models.LoanRequest;
 import com.uabc.jonahn.springweb.LoanRequest.repositories.LoanRequestRepository;
+import com.uabc.jonahn.springweb.LoanRequest.enums.Status;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -35,6 +36,7 @@ public class LoanRequestController {
     // Create a loan request
     @PostMapping("/loan_requests")
     public ResponseEntity<?> save(@RequestBody LoanRequest request) {
+        request.setStatus(Status.IN_PROGRESS);
         EntityModel<LoanRequest> entityModel = assembler.toModel(repository.save(request));
 
         return ResponseEntity
@@ -58,7 +60,7 @@ public class LoanRequestController {
                 .map(oldRequest -> {
                     oldRequest.setApplicantName(newRequest.getApplicantName());
                     oldRequest.setLoanAmount(newRequest.getLoanAmount());
-                    oldRequest.setApproved(newRequest.isApproved());
+                    oldRequest.setStatus(newRequest.getStatus());
                     oldRequest.setTerm(newRequest.getTerm());
 
                     return repository.save(oldRequest);

@@ -1,5 +1,6 @@
 package com.uabc.jonahn.springweb.LoanRequest.models;
 
+import com.uabc.jonahn.springweb.LoanRequest.enums.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -24,14 +25,16 @@ public class LoanRequest {
     @NonNull
     private Float loanAmount;
 
-    private boolean approved;
+    @NonNull
+    private Status status;
 
     private String term;
 
-    public LoanRequest(String applicantFirstName, String applicantLastName, @NonNull Float loanAmount) {
+    public LoanRequest(String applicantFirstName, String applicantLastName, @NonNull Float loanAmount, @NonNull Status status) {
         this.applicantFirstName = applicantFirstName;
         this.applicantLastName = applicantLastName;
         this.loanAmount = loanAmount;
+        this.status = status;
     }
 
     // "Virtual" getter for old property 'applicantName'
@@ -56,13 +59,13 @@ public class LoanRequest {
         return Objects.equals(this.id, loanReq.id) &&
                Objects.equals(this.applicantFirstName, loanReq.applicantFirstName) &&
                Objects.equals(this.applicantLastName, loanReq.applicantLastName) &&
-               Objects.equals(this.approved, loanReq.approved) &&
+               Objects.equals(this.status, loanReq.status) &&
                Objects.equals(this.term, loanReq.term);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, applicantFirstName, applicantLastName, approved, term);
+        return Objects.hash(id, applicantFirstName, applicantLastName, status, term);
     }
 
     @Override
@@ -72,7 +75,7 @@ public class LoanRequest {
                 ", applicantFirstName='" + applicantFirstName + '\'' +
                 ", applicantLastName='" + applicantLastName + '\'' +
                 ", loanAmount=" + loanAmount +
-                ", approved=" + approved +
+                ", status=" + status +
                 ", term='" + term + '\'' + '}';
     }
 
