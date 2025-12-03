@@ -7,6 +7,8 @@ import com.uabc.jonahn.springweb.LoanRequest.repositories.LoanRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -32,8 +34,12 @@ public class LoanRequestController {
 
     // Create a loan request
     @PostMapping("/loan_requests")
-    public LoanRequest save(@RequestBody LoanRequest request) {
-        return repository.save(request);
+    public ResponseEntity<?> save(@RequestBody LoanRequest request) {
+        EntityModel<LoanRequest> entityModel = assembler.toModel(repository.save(request));
+
+        return ResponseEntity
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(entityModel);
     }
 
     // Retrieve a loan request by its ID
