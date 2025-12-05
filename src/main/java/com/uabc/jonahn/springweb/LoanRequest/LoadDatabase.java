@@ -1,5 +1,6 @@
 package com.uabc.jonahn.springweb.LoanRequest;
 
+import com.uabc.jonahn.springweb.LoanRequest.enums.Status;
 import com.uabc.jonahn.springweb.LoanRequest.models.LoanRequest;
 import com.uabc.jonahn.springweb.LoanRequest.repositories.LoanRequestRepository;
 import org.slf4j.Logger;
@@ -18,8 +19,12 @@ public class LoadDatabase {
         return args -> {
             log.info("Starting database load");
 
-            log.info("Preloading {}", repository.save(new LoanRequest("John Doe", 1000F)));
-            log.info("Preloading {}", repository.save(new LoanRequest("Jane Doe", 999.9F)));
+            repository.save(new LoanRequest("John", "Doe", 10000F, Status.IN_PROGRESS));
+            repository.save(new LoanRequest("Jane", "Doe", 9999.9F, Status.APPROVED));
+            repository.save(new LoanRequest("Jinx", "Doe", 9999.9F, Status.REJECTED));
+
+            repository.findAll().forEach(request -> log.info("Preloaded request: {}", request));
+
         };
     }
     
