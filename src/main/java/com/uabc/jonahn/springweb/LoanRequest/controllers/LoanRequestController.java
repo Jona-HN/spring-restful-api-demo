@@ -64,7 +64,6 @@ public class LoanRequestController {
                 .map(oldRequest -> {
                     oldRequest.setApplicantName(newRequest.getApplicantName());
                     oldRequest.setLoanAmount(newRequest.getLoanAmount());
-                    oldRequest.setStatus(newRequest.getStatus());
                     oldRequest.setTerm(newRequest.getTerm());
 
                     return repository.save(oldRequest);
