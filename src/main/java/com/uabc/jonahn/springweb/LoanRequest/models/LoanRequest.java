@@ -25,12 +25,11 @@ public class LoanRequest {
     @NonNull
     private Float loanAmount;
 
-    @NonNull
     private Status status;
 
     private String term;
 
-    public LoanRequest(String applicantFirstName, String applicantLastName, @NonNull Float loanAmount, @NonNull Status status) {
+    public LoanRequest(String applicantFirstName, String applicantLastName, @NonNull Float loanAmount, Status status) {
         this.applicantFirstName = applicantFirstName;
         this.applicantLastName = applicantLastName;
         this.loanAmount = loanAmount;
